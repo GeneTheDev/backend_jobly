@@ -1,23 +1,46 @@
 "use strict";
+
 /** Database setup for jobly. */
 const { Client } = require("pg");
 const { getDatabaseUri } = require("./config");
 
-let db;
+function getConnectionUri() {
+  const databaseUri = getDatabaseUri();
+  const user = process.env.DB_USER;
+  const password = process.env.DB_PASSWORD;
 
-if (process.env.NODE_ENV === "production") {
-    db = new Client({
-        connectionString: getDatabaseUri(),
-        ssl: {
-            rejectUnauthorized: false
-        }
-    });
-} else {
-    db = new Client({
-        connectionString: getDatabaseUri()
-    });
+  if (!user || !password) {
+    throw new Error(
+      "DB_USER and DB_PASSWORD environment variables are required"
+    );
+  }
+
+  return `postgresql://${user}:${password}@${databaseUri}`;
 }
 
-db.connect();
+let db;
 
-module.exports = db;
+async function connect() {
+  if (!db) {
+    db = new Client({
+      connectionString: getConnectionUri(),
+    });
+
+    try {
+      await db.connect();
+      console.log("Database connected successfully!");
+    } catch (error) {
+      console.error("Error connecting to the database:", error.message);
+      process.exit(1);
+    }
+  }
+}
+
+connect();
+
+module.exports = {
+  query: async (text, params) => {
+    await connect();
+    return db.query(text, params);
+  },
+};
