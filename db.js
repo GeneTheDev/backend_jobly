@@ -31,16 +31,18 @@ async function connect() {
       console.log("Database connected successfully!");
     } catch (error) {
       console.error("Error connecting to the database:", error.message);
-      process.exit(1);
+      throw error;
     }
   }
 }
 
 connect();
 
+async function query(text, params) {
+  await connect();
+  return db.query(text, params);
+}
+
 module.exports = {
-  query: async (text, params) => {
-    await connect();
-    return db.query(text, params);
-  },
+  query,
 };
