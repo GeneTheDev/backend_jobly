@@ -6,8 +6,8 @@ const { getDatabaseUri } = require("./config");
 
 function getConnectionUri() {
   const databaseUri = getDatabaseUri();
-  const user = process.env.DB_USER;
-  const password = process.env.DB_PASSWORD;
+  const user = process.env.DB_USER || "gene";
+  const password = process.env.DB_PASSWORD || "@Gene21gene";
 
   if (!user || !password) {
     throw new Error(
@@ -15,7 +15,7 @@ function getConnectionUri() {
     );
   }
 
-  return `postgresql://${user}:${password}@${databaseUri}`;
+  return databaseUri;
 }
 
 let db;

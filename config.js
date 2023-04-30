@@ -16,14 +16,18 @@ function getDatabaseUri() {
   }
 
   const dbName = process.env.NODE_ENV === "test" ? "jobly_test" : "jobly";
-  const host = process.env.DB_HOST;
-  const port = process.env.DB_PORT;
+  const host = process.env.DB_HOST || "localhost";
+  const port = process.env.DB_PORT || 5432;
+  const user = process.env.DB_USER || "gene";
+  const password = process.env.DB_PASSWORD || "DB_PASSWORD";
 
   if (!host || !port) {
-    throw new Error("DB_HOST and DB_PORT environment variables are required");
+    throw new Error(
+      "DB_HOST, DB_PORT, DB_USER, and DB_PASSWORD environment variables are required"
+    );
   }
 
-  return `${host}:${port}/${dbName}`;
+  return `postgres://${user}:${password}@${host}:${port}/${dbName}`;
 }
 
 // Speed up bcrypt during tests, since the algorithm safety isn't being tested
