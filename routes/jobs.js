@@ -7,6 +7,7 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 const { BadRequestError } = require("../expressError");
 const { ensureAdmin } = require("../middleware/auth");
+const { ensureLoggedIn } = require("../middleware/auth");
 const Job = require("../models/job");
 const jobNewSchema = require("../schemas/jobNew.json");
 const jobUpdateSchema = require("../schemas/jobUpdate.json");
@@ -68,6 +69,31 @@ router.get("/", async function (req, res, next) {
     return next(err);
   }
 });
+
+/** POST /users/:username/jobs/:id
+ *
+ * Apply to a job
+ *
+ * Returns { applied: jobId }
+ *
+ * Authorization required: logged in as the correct user
+ */
+router.post(
+  "/:username/jobs/:id",
+  ensureLoggedIn,
+  async function (req, res, next) {
+    try {
+      const { username } = req.params;
+      if (username !== req.user.username) {
+        throw new ForbiddenError("You can only apply to jobs for yourself");
+      }
+      const jobId = await Job.applyToJob(username, req.params.id);
+      return res.status(201).json({ applied: jobId });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
 
 /** GET /[jobId] => { job }
  *

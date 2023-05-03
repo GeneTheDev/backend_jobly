@@ -11,6 +11,8 @@ const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
+const Job = require("../models/job");
+const { ForbiddenError } = require("../expressError");
 
 const router = express.Router();
 
@@ -112,5 +114,26 @@ router.delete("/:username", ensureLoggedIn, async function (req, res, next) {
     return next(err);
   }
 });
+
+/**
+ *
+ * applying for a job
+ */
+router.post(
+  "/:username/jobs/:id",
+  ensureLoggedIn,
+  async function (req, res, next) {
+    try {
+      const { username } = req.params;
+      if (username !== res.locals.user.username) {
+        throw new ForbiddenError("You can only apply to jobs for yourself");
+      }
+      const jobId = await Job.applyToJob(username, req.params.id);
+      return res.status(201).json({ applied: jobId });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
 
 module.exports = router;
