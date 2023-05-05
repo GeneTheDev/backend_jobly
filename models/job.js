@@ -1,7 +1,7 @@
 "use strict";
 
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
+const { NotFoundError, BadRequestError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for companies. */
@@ -33,6 +33,20 @@ class Job {
    * apply for a job
    */
   static async applyToJob(username, id) {
+    //check if user has already applied for the job
+    const checkApplication = await db.query(
+      `SELECT job_id, username
+      FROM applications
+      WHERE job_id = $1 AND username = $2`,
+      [id, username]
+    );
+
+    if (checkApplication.rows[0]) {
+      throw new BadRequestError(
+        `User ${username} has already applied for job ${id}`
+      );
+    }
+
     const result = await db.query(
       `INSERT INTO applications (job_id, username)
         VALUES ($1, $2)
