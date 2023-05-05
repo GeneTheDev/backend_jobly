@@ -131,7 +131,11 @@ router.post(
       const jobId = await Job.applyToJob(username, req.params.id);
       return res.status(201).json({ applied: jobId });
     } catch (err) {
-      return next(err);
+      if (err instanceof BadRequestError) {
+        return res.status(400).json({ error: { message: err.message } });
+      } else {
+        return next(err);
+      }
     }
   }
 );
