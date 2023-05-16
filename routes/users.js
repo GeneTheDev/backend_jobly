@@ -125,13 +125,23 @@ router.post(
   async function (req, res, next) {
     try {
       const { username } = req.params;
-      if (username !== res.locals.user.username) {
+
+      // Ensure that res.locals.user is defined
+      if (!res.locals.user || username !== res.locals.user.username) {
         throw new ForbiddenError("You can only apply to jobs for yourself");
       }
-      const jobId = await Job.applyToJob(username, req.params.id);
-      return res.status(201).json({ applied: jobId });
+
+      // Check that id parameter is valid
+      const jobId = req.params.id;
+      if (!jobId || isNaN(jobId)) {
+        throw new BadRequestError("Invalid job id");
+      }
+
+      // Assume that Job.applyToJob handles errors correctly and throws as necessary
+      const appliedJobId = await Job.applyToJob(username, jobId);
+      return res.status(201).json({ applied: appliedJobId });
     } catch (err) {
-      if (err instanceof BadRequestError) {
+      if (err instanceof BadRequestError || err instanceof ForbiddenError) {
         return res.status(400).json({ error: { message: err.message } });
       } else {
         return next(err);
