@@ -4,7 +4,6 @@
 
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 
 const { NotFoundError } = require("./expressError");
 
@@ -22,18 +21,6 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
-
-// serve static files
-app.use(express.static(path.join(__dirname, "build")));
-
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
-
-// respond to a GET request at the root ("/") endpoint
-app.get("/", function (req, res, next) {
-  res.status(200).json({ message: "Hello, world!" });
-});
 
 app.use("/auth", authRoutes);
 app.use("/companies", companiesRoutes);
