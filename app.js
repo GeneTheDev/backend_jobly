@@ -22,6 +22,10 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
+app.get("/", function (req, res, next) {
+  res.status(200).json({ message: "Hello, world!" });
+});
+
 app.use("/auth", authRoutes);
 app.use("/companies", companiesRoutes);
 app.use("/users", usersRoutes);
