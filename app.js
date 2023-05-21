@@ -26,6 +26,10 @@ app.use(authenticateJWT);
 // serve static files
 app.use(express.static(path.join(__dirname, "build")));
 
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
 // respond to a GET request at the root ("/") endpoint
 app.get("/", function (req, res, next) {
   res.status(200).json({ message: "Hello, world!" });
