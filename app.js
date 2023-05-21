@@ -22,6 +22,7 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
+// respond to a GET request at the root ("/") endpoint
 app.get("/", function (req, res, next) {
   res.status(200).json({ message: "Hello, world!" });
 });
