@@ -1,8 +1,15 @@
 "use strict";
 
 const app = require("./app");
+const http = require("http");
 const { PORT } = require("./config");
 
-app.listen(PORT, function () {
-    console.log(`Started on http://localhost:${PORT}`);
+const server = http.createServer(app);
+
+server.listen(PORT, "localhost", function () {
+  console.log(
+    "Express server started on port %s at %s",
+    server.address().port,
+    server.address().address
+  );
 });
