@@ -6,7 +6,7 @@ const { PORT } = require("./config");
 
 const server = http.createServer(app);
 
-server.listen(PORT, "localhost", function () {
+server.listen(PORT, function () {
   console.log(
     "Express server started on port %s at %s",
     server.address().port,
