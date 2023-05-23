@@ -18,16 +18,16 @@ const morgan = require("morgan");
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "../build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "../build/index.html"));
-});
-
 app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
+
+app.use(express.static(path.join(__dirname, "../build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build/index.html"));
+});
 
 app.use("/auth", authRoutes);
 app.use("/companies", companiesRoutes);
