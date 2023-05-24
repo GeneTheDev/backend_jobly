@@ -6,8 +6,8 @@ const { getDatabaseUri } = require("./config");
 
 function getConnectionUri() {
   const databaseUri = getDatabaseUri();
-  const user = process.env.DB_USER || "gene";
-  const password = process.env.DB_PASSWORD || "@Gene21gene";
+  const user = process.env.DB_USER;
+  const password = process.env.DB_PASSWORD;
 
   if (!user || !password) {
     throw new Error(
