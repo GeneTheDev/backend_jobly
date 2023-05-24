@@ -23,16 +23,10 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
-app.use(express.static(path.join(__dirname, "./build")));
-
 app.use("/auth", authRoutes);
 app.use("/companies", companiesRoutes);
 app.use("/users", usersRoutes);
 app.use("/jobs", jobsRoutes);
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "./build/index.html"));
-});
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
